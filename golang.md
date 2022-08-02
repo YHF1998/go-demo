@@ -1,3 +1,16 @@
+# 协程下的并发锁
+
+## 针对同一个ID数据更改的并发限制
+
+```
+1.使用sync包的map来做同id并发限制处理
+2.使用LoadOrStore添加值，如果已经存在的键，会返回false，这时当前goruntine应该进入休眠状态，等待其它goruntine对该recordid操作完成后，继续执行
+3.在goruntine对recordid操作完成后，需要调用Delete方法释放这个recordid，让其它goruntine知道这个记录可以操作了
+```
+
+
+
+```go
 package main
 
 import (
@@ -45,3 +58,6 @@ func action(userid, recordId int) {
 	time.Sleep(time.Second * 5)
 	m.Delete(recordId)
 }
+
+```
+
